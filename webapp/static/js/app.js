@@ -878,11 +878,35 @@ function renderAdminBookings() {
 function openConfirmModal(bookingId) {
     currentAdminBookingId = bookingId;
     modalSelectedTime = null;
-    document.querySelectorAll('#modal-time-slots .time-slot').forEach(el => el.classList.remove('selected'));
+    document.getElementById('modal-time-slots').innerHTML = '';
     document.getElementById('modal-confirm-body').style.display = 'block';
     document.getElementById('modal-reject-body').style.display = 'none';
     document.getElementById('modal-title').textContent = 'Подтвердить запись';
     document.getElementById('confirm-modal').classList.add('active');
+
+    const booking = adminBookings.find(b => b.id === bookingId);
+    if (booking) {
+        loadModalSlots(booking.date);
+    }
+}
+
+async function loadModalSlots(date) {
+    const container = document.getElementById('modal-time-slots');
+    container.innerHTML = '<div class="bookings-loading"><div class="spinner" style="width:24px;height:24px;border-width:2px;margin:10px auto"></div></div>';
+    try {
+        const resp = await fetch(`/api/slots?date=${date}`);
+        const data = await resp.json();
+        const booked = data.booked || [];
+        container.innerHTML = ALL_SLOTS.map(time => {
+            const disabled = booked.includes(time);
+            return `<button type="button" class="time-slot ${disabled ? 'disabled' : ''}" 
+                ${disabled ? 'disabled' : `onclick="pickModalTime(this)"`}>${time}</button>`;
+        }).join('');
+    } catch (err) {
+        container.innerHTML = ALL_SLOTS.map(time =>
+            `<button type="button" class="time-slot" onclick="pickModalTime(this)">${time}</button>`
+        ).join('');
+    }
 }
 
 function openRejectModal(bookingId) {

@@ -284,15 +284,33 @@ async def create_booking(req: BookingRequest):
         if not user:
             raise HTTPException(404, "Пользователь не найден")
 
-        # Проверка занятости слота
-        conflict = await session.execute(
-            select(Booking).where(
+        # Проверка занятости слота (с учётом длительности сеанса)
+        req_h, req_m = map(int, req.time.split(":"))
+        req_min = req_h * 60 + req_m
+
+        confirmed = await session.execute(
+            select(Booking.confirmed_time, Booking.service).where(
                 Booking.date == req.date,
-                Booking.time == req.time,
-                Booking.status.in_(["new", "confirmed"]),
+                Booking.status == "confirmed",
+                Booking.confirmed_time.isnot(None),
             )
         )
-        if conflict.scalar_one_or_none():
+        slot_busy = False
+        for c_time, service_name in confirmed.all():
+            if not c_time:
+                continue
+            svc_result = await session.execute(
+                select(Service.duration).where(Service.name == service_name)
+            )
+            svc_row = svc_result.first()
+            duration = svc_row[0] if svc_row else 60
+            ch, cm = map(int, c_time.split(":"))
+            c_start = ch * 60 + cm
+            c_end = c_start + duration
+            if c_start <= req_min < c_end:
+                slot_busy = True
+                break
+        if slot_busy:
             raise HTTPException(409, "Это время уже занято. Выберите другое.")
 
         booking = Booking(
@@ -373,13 +391,32 @@ async def get_booked_slots(date: str):
     """Получение занятых слотов на дату"""
     async with get_session() as session:
         result = await session.execute(
-            select(Booking.time).where(
+            select(Booking.confirmed_time, Booking.service).where(
                 Booking.date == date,
-                Booking.status.in_(["new", "confirmed"]),
+                Booking.status == "confirmed",
+                Booking.confirmed_time.isnot(None),
             )
         )
-        booked = [row[0] for row in result.all()]
-        return {"ok": True, "booked": booked}
+        booked = set()
+        for time_val, service_name in result.all():
+            if not time_val:
+                continue
+            booked.add(time_val)
+            # Ищем длительность услуги
+            svc_result = await session.execute(
+                select(Service.duration).where(Service.name == service_name)
+            )
+            svc_row = svc_result.first()
+            duration = svc_row[0] if svc_row else 60
+            # Блокируем слоты на протяжении сеанса (слоты по 30 мин)
+            h, m = map(int, time_val.split(":"))
+            total_min = h * 60 + m
+            slots_to_block = (duration + 29) // 30  # округление вверх
+            for i in range(1, slots_to_block):
+                block_min = total_min + i * 30
+                block_h, block_m = divmod(block_min, 60)
+                booked.add(f"{block_h:02d}:{block_m:02d}")
+        return {"ok": True, "booked": list(booked)}
 
 
 # ==================== PROMOS ====================
