@@ -1,0 +1,10 @@
+__pycache__
+*.pyc
+.env
+*.db
+.git
+.gitignore
+fly.toml
+README.md
+webapp/uploads/*
+!webapp/uploads/.gitkeep

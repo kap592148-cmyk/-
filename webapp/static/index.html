@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kris Com</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+
+        <!-- ==================== REGISTRATION SCREEN ==================== -->
+        <div id="screen-register" class="auth-screen">
+            <div class="auth-header">
+                <button class="auth-back" onclick="switchScreen('screen-home')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+            </div>
+
+            <h1 class="auth-title">Регистрация</h1>
+            <p class="auth-subtitle">Создайте аккаунт, чтобы записываться и накапливать бонусы</p>
+
+            <form class="auth-form" id="register-form" onsubmit="handleRegister(event)">
+                <div class="auth-field">
+                    <label class="auth-label" for="reg-name">Ваше имя</label>
+                    <input class="auth-input" type="text" id="reg-name" placeholder="Например, Анастасия" autocomplete="name" required>
+                </div>
+
+                <div class="auth-field">
+                    <label class="auth-label" for="reg-login">Логин</label>
+                    <input class="auth-input" type="text" id="reg-login" placeholder="От 3 символов" autocomplete="username" minlength="3" required>
+                    <span class="auth-error" id="reg-login-error"></span>
+                </div>
+
+                <div class="auth-field">
+                    <label class="auth-label" for="reg-password">Пароль</label>
+                    <div class="auth-input-wrapper">
+                        <input class="auth-input" type="password" id="reg-password" placeholder="От 4 символов" autocomplete="new-password" minlength="4" required>
+                        <button type="button" class="auth-toggle-pw" onclick="togglePassword('reg-password', this)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                    <span class="auth-error" id="reg-password-error"></span>
+                </div>
+
+                <div class="auth-field">
+                    <label class="auth-label" for="reg-password2">Повторите пароль</label>
+                    <div class="auth-input-wrapper">
+                        <input class="auth-input" type="password" id="reg-password2" placeholder="Ещё раз пароль" autocomplete="new-password" minlength="4" required>
+                        <button type="button" class="auth-toggle-pw" onclick="togglePassword('reg-password2', this)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                    <span class="auth-error" id="reg-password2-error"></span>
+                </div>
+
+                <button type="submit" class="auth-submit" id="reg-submit">
+                    <span class="btn-text">Создать аккаунт</span>
+                    <div class="spinner"></div>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Уже есть аккаунт? <a onclick="switchScreen('screen-login')">Войти</a>
+            </div>
+        </div>
+
+        <!-- ==================== LOGIN SCREEN ==================== -->
+        <div id="screen-login" class="auth-screen">
+            <div class="auth-header">
+                <button class="auth-back" onclick="switchScreen('screen-home')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+            </div>
+
+            <h1 class="auth-title">Вход</h1>
+            <p class="auth-subtitle">Войдите в свой аккаунт Kris Com</p>
+
+            <form class="auth-form" id="login-form" onsubmit="handleLogin(event)">
+                <div class="auth-field">
+                    <label class="auth-label" for="login-login">Логин</label>
+                    <input class="auth-input" type="text" id="login-login" placeholder="Ваш логин" autocomplete="username" required>
+                    <span class="auth-error" id="login-login-error"></span>
+                </div>
+
+                <div class="auth-field">
+                    <label class="auth-label" for="login-password">Пароль</label>
+                    <div class="auth-input-wrapper">
+                        <input class="auth-input" type="password" id="login-password" placeholder="Ваш пароль" autocomplete="current-password" required>
+                        <button type="button" class="auth-toggle-pw" onclick="togglePassword('login-password', this)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                    <span class="auth-error" id="login-password-error"></span>
+                </div>
+
+                <button type="submit" class="auth-submit" id="login-submit">
+                    <span class="btn-text">Войти</span>
+                    <div class="spinner"></div>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Нет аккаунта? <a onclick="switchScreen('screen-register')">Зарегистрироваться</a>
+            </div>
+        </div>
+
+        <!-- ==================== HOME SCREEN ==================== -->
+        <div id="screen-home" class="screen active">
+            <div class="header">
+                <span class="header-logo">Kris Com</span>
+                <button class="header-menu">&#8943;</button>
+            </div>
+
+            <div class="welcome-section">
+                <div class="welcome-content">
+                    <h1 class="welcome-title">Добро<br>пожаловать <span class="heart">&#9825;</span></h1>
+                    <p class="welcome-subtitle">Твоя красота — моя забота</p>
+                    <button class="book-btn" onclick="switchScreen('screen-booking')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        Записаться
+                    </button>
+                </div>
+                <!-- Иллюстрация из папки img -->
+                <img class="welcome-illustration" id="welcome-illustration" src="/static/img/girl.png" alt="Kris Com">
+                <!-- Редактирование позиции (только для админа) -->
+                <div id="admin-image-controls" style="display:none;position:absolute;right:0;top:260px;z-index:3;width:220px;padding:10px;background:rgba(255,255,255,0.95);border-radius:12px;box-shadow:var(--shadow-md)">
+                    <div style="font-size:12px;font-weight:600;color:var(--text-dark);margin-bottom:8px;text-align:center">Редактировать изображение</div>
+                    <div style="margin-bottom:6px">
+                        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-light)"><span>Масштаб</span><span id="val-scale"></span></div>
+                        <input type="range" id="img-scale" min="20" max="200" value="100" style="width:100%;accent-color:#C9A96E" oninput="onImagePropChange()">
+                    </div>
+                    <div style="margin-bottom:6px">
+                        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-light)"><span>Отступ X</span><span id="val-right"></span></div>
+                        <input type="range" id="img-right" min="-200" max="200" value="0" style="width:100%;accent-color:#C9A96E" oninput="onImagePropChange()">
+                    </div>
+                    <div style="margin-bottom:8px">
+                        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-light)"><span>Снизу</span><span id="val-bottom"></span></div>
+                        <input type="range" id="img-bottom" min="-200" max="300" value="0" style="width:100%;accent-color:#C9A96E" oninput="onImagePropChange()">
+                    </div>
+                    <button class="admin-btn admin-btn-confirm" style="width:100%;padding:6px;font-size:12px" onclick="saveImageProps()">Сохранить</button>
+                </div>
+            </div>
+
+            <div class="categories-section">
+                <div class="categories-grid" id="home-categories">
+                    <!-- Услуги загружаются из API -->
+                </div>
+            </div>
+
+            <div style="height:1px;background:#fff;margin:0 0 4px"></div>
+
+            <!-- Наши работы -->
+            <div class="works-section">
+                <div class="section-header">
+                    <h2 class="section-title">Наши работы</h2>
+                </div>
+                <div id="home-portfolio" style="padding: 0 0 8px">
+                    <div class="works-scroll">
+                        <div class="work-card" style="background: linear-gradient(145deg, #E8D5B7 0%, #D4B87A 100%);">
+                            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+                                <svg width="50" height="50" viewBox="0 0 50 50" fill="none" stroke="white" stroke-width="1.2" opacity="0.6">
+                                    <circle cx="25" cy="18" r="10"/>
+                                    <path d="M12 44C12 36 17 30 25 30C33 30 38 36 38 44"/>
+                                    <path d="M18 14C20 12 30 12 32 14"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="work-card" style="background: linear-gradient(145deg, #C9A96E 0%, #B89A5E 100%);">
+                            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+                                <svg width="50" height="50" viewBox="0 0 50 50" fill="none" stroke="white" stroke-width="1.2" opacity="0.6">
+                                    <path d="M16 38C16 30 20 26 25 26C30 26 34 30 34 38"/>
+                                    <circle cx="25" cy="16" r="9"/>
+                                    <path d="M20 14C22 12 28 12 30 14"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Отзывы клиентов -->
+            <div class="categories-section">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:0 0 12px">
+                    <h2 class="services-title" style="margin:0">Отзывы клиентов</h2>
+                    <div id="home-rating" style="display:none;align-items:center;gap:6px">
+                        <span style="color:var(--gold);font-size:22px;font-weight:700" id="home-rating-value"></span>
+                        <span style="color:var(--gold);font-size:18px">&#9733;</span>
+                        <span style="color:var(--text-light);font-size:13px" id="home-rating-count"></span>
+                    </div>
+                </div>
+                <div id="home-reviews" style="padding: 0 0 8px">
+                    <div class="bookings-loading">
+                        <div class="spinner" style="width:28px;height:28px;border-width:2px;margin:20px auto"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== BOOKING SCREEN ==================== -->
+        <div id="screen-booking" class="screen">
+            <div class="header">
+                <span class="header-logo">Kris Com</span>
+                <button class="header-menu">&#8943;</button>
+            </div>
+
+            <div class="booking-header">
+                <h1 class="booking-title">Запись</h1>
+            </div>
+
+            <div class="steps-indicator">
+                <div class="step-item active" data-step="1">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                    Услуга
+                </div>
+                <div class="step-item" data-step="2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    Дата и время
+                </div>
+                <div class="step-item" data-step="3">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    Готово
+                </div>
+            </div>
+
+            <!-- Шаг 1: Выбор услуги -->
+            <div class="booking-step" id="booking-step-1">
+                <div class="services-section">
+                    <h2 class="services-title">Выберите услугу</h2>
+                    <div id="booking-services">
+                        <!-- Услуги загружаются из API -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Шаг 2: Дата и время + контакты -->
+            <div class="booking-step" id="booking-step-2" style="display:none">
+                <div class="services-section">
+                    <h2 class="services-title">Дата и время</h2>
+                    <div class="auth-field">
+                        <label class="auth-label">Дата</label>
+                        <input class="auth-input" type="date" id="book-date" onchange="onDateChange()">
+                    </div>
+                    <div class="auth-field" style="margin-top:14px">
+                        <label class="auth-label">Время</label>
+                        <div class="time-slots" id="time-slots"></div>
+                    </div>
+                    <h2 class="services-title" style="margin-top:22px">Контакты</h2>
+                    <div class="auth-field">
+                        <label class="auth-label">Телефон</label>
+                        <input class="auth-input" type="tel" id="book-phone" placeholder="+7 999 123 45 67" maxlength="16" oninput="formatPhone(this)">
+                    </div>
+                    <div class="auth-field" style="margin-top:14px">
+                        <label class="auth-label">Комментарий <span style="color:var(--text-light);font-weight:400">(необязательно)</span></label>
+                        <input class="auth-input" type="text" id="book-comment" placeholder="Пожелания к записи">
+                    </div>
+                    <button class="auth-submit" style="margin-top:20px" onclick="submitBooking()">
+                        <span class="btn-text">Подтвердить запись</span>
+                        <div class="spinner"></div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Шаг 3: Успешная запись -->
+            <div class="booking-step" id="booking-step-3" style="display:none">
+                <div class="booking-success">
+                    <div class="auth-success-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <h2 class="booking-title" style="text-align:center">Запись создана!</h2>
+                    <p class="auth-subtitle" style="text-align:center" id="booking-success-text">
+                        Вы записаны. Мы свяжемся с вами для подтверждения.
+                    </p>
+                    <button class="auth-submit" onclick="resetBooking(); switchScreen('screen-home')" style="margin-top:10px">
+                        <span class="btn-text">На главную</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== PROMOS SCREEN ==================== -->
+        <div id="screen-promos" class="screen">
+            <div class="header">
+                <span class="header-logo">Kris Com</span>
+                <button class="header-menu">&#8943;</button>
+            </div>
+
+            <div class="promos-header">
+                <h1 class="promos-title">Акции и предложения</h1>
+            </div>
+
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterPromos(this, 'all')">Все</button>
+                <button class="filter-tab" onclick="filterPromos(this, 'discount')">Скидки</button>
+                <button class="filter-tab" onclick="filterPromos(this, 'complex')">Комплексы</button>
+                <button class="filter-tab" onclick="filterPromos(this, 'gift')">Подарки</button>
+            </div>
+
+            <div class="promo-cards" id="promo-list">
+                <div class="bookings-loading">
+                    <div class="spinner" style="width:32px;height:32px;border-width:3px;margin:40px auto"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== PROFILE SCREEN ==================== -->
+        <div id="screen-profile" class="screen">
+            <div class="header">
+                <span class="header-logo">Kris Com</span>
+                <button class="header-menu">&#8943;</button>
+            </div>
+
+            <!-- Не залогинен -->
+            <div class="profile-auth-prompt" id="profile-guest">
+                <div class="profile-header">
+                    <div class="profile-avatar-wrapper">
+                        <div class="profile-avatar">
+                            <svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="white" stroke-width="1.3" opacity="0.8">
+                                <circle cx="28" cy="20" r="11"/>
+                                <path d="M12 48C12 39 18 33 28 33C38 33 44 39 44 48"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <h2 class="profile-name">Гость</h2>
+                    <p class="profile-phone">Войдите, чтобы записываться</p>
+                </div>
+                <div class="profile-auth-buttons">
+                    <button class="auth-submit" onclick="switchScreen('screen-login')" style="margin-top:0">
+                        <span class="btn-text">Войти</span>
+                    </button>
+                    <button class="auth-outline-btn" onclick="switchScreen('screen-register')">
+                        Создать аккаунт
+                    </button>
+                </div>
+            </div>
+
+            <!-- Залогинен -->
+            <div id="profile-authorized" style="display:none">
+                <div class="profile-header">
+                    <div class="profile-avatar-wrapper">
+                        <div class="profile-avatar" id="profile-avatar-display">
+                            <svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="white" stroke-width="1.3" opacity="0.8">
+                                <circle cx="28" cy="20" r="11"/>
+                                <path d="M12 48C12 39 18 33 28 33C38 33 44 39 44 48"/>
+                                <path d="M22 18C24 16 32 16 34 18"/>
+                            </svg>
+                        </div>
+                        <div class="profile-avatar-edit" onclick="document.getElementById('avatar-input').click()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                        </div>
+                        <input type="file" id="avatar-input" accept="image/*" style="display:none" onchange="uploadAvatar(this)">
+                    </div>
+                    <h2 class="profile-name">Анастасия</h2>
+                    <p class="profile-phone">+7 (999) 123-45-67</p>
+                </div>
+
+                <div class="profile-menu">
+                    <a class="profile-menu-item" onclick="openMenuItem('bookings')">
+                        <div class="profile-menu-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C9A96E" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        </div>
+                        <span class="profile-menu-text">Мои записи</span>
+                        <span class="profile-menu-arrow">&rsaquo;</span>
+                    </a>
+
+                    <a class="profile-menu-item" onclick="openMenuItem('bonus')">
+                        <div class="profile-menu-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C9A96E" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </div>
+                        <span class="profile-menu-text">Бонусы</span>
+                        <span class="profile-menu-value" id="profile-bonus">0 &#8381;</span>
+                        <span class="profile-menu-arrow">&rsaquo;</span>
+                    </a>
+
+                    <!-- Только для админов -->
+                    <a class="profile-menu-item admin-panel-btn" onclick="openMenuItem('admin')" style="display:none">
+                        <div class="profile-menu-icon" style="background: #FFF3E0;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E67E22" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <span class="profile-menu-text" style="color:#E67E22">Панель админа</span>
+                        <span class="profile-menu-arrow">&rsaquo;</span>
+                    </a>
+
+                    <a class="profile-menu-item" href="tel:+79507197438">
+                        <div class="profile-menu-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C9A96E" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        </div>
+                        <span class="profile-menu-text">Помощь и поддержка</span>
+                        <span class="profile-menu-value" style="font-size:13px">+7 (950) 719-74-38</span>
+                        <span class="profile-menu-arrow">&rsaquo;</span>
+                    </a>
+
+                    <a class="profile-menu-item" onclick="openMenuItem('faq')">
+                        <div class="profile-menu-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C9A96E" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        </div>
+                        <span class="profile-menu-text">FAQ</span>
+                        <span class="profile-menu-arrow">&rsaquo;</span>
+                    </a>
+
+                    <a class="profile-menu-item" onclick="handleLogout()" style="margin-top:8px">
+                        <div class="profile-menu-icon" style="background: #FDE8E8;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E74C3C" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        </div>
+                        <span class="profile-menu-text" style="color:#E74C3C">Выйти</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== MY BOOKINGS SCREEN ==================== -->
+        <div id="screen-my-bookings" class="screen">
+            <div class="header">
+                <span class="header-logo">Kris Com</span>
+                <button class="header-menu" onclick="switchScreen('screen-profile')">&#8943;</button>
+            </div>
+
+            <div class="booking-header">
+                <h1 class="booking-title">Мои записи</h1>
+            </div>
+
+            <div id="my-bookings-list" style="padding: 0 20px;">
+                <div class="bookings-loading">
+                    <div class="spinner" style="width:32px;height:32px;border-width:3px;margin:40px auto"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== FAQ SCREEN ==================== -->
+        <div id="screen-faq" class="screen">
+            <div class="header">
+                <span class="header-logo">Kris Com</span>
+                <button class="header-menu" onclick="switchScreen('screen-profile')">&#8943;</button>
+            </div>
+
+            <div class="booking-header">
+                <h1 class="booking-title">FAQ</h1>
+            </div>
+
+            <div style="padding: 0 20px 20px">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">Где мы находимся?</div>
+                    <div class="faq-answer">ул. Белгородского Полка, 35, Белгород, Белгородская обл., Россия</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">Как записаться?</div>
+                    <div class="faq-answer">Выберите услугу и удобное время во вкладке «Запись». Мы свяжемся с вами для подтверждения.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">Можно ли отменить запись?</div>
+                    <div class="faq-answer">Да, свяжитесь с нами по телефону или напишите в поддержку не позднее чем за 2 часа до визита.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">Как работают бонусы?</div>
+                    <div class="faq-answer">Бонусы начисляются за визиты и акции. Ими можно оплатить до 50% стоимости услуги.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">Какие способы оплаты?</div>
+                    <div class="faq-answer">Наличные, банковская карта, СБП.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">Как связаться с поддержкой?</div>
+                    <div class="faq-answer">Позвоните нам: <a href="tel:+79507197438" style="color:var(--gold);font-weight:600">+7 (950) 719-74-38</a></div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">Работаете ли вы в праздники?</div>
+                    <div class="faq-answer">Да, график работы в праздники публикуется в наших соцсетях. Следите за обновлениями!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== ADMIN PANEL SCREEN ==================== -->
+        <div id="screen-admin" class="screen">
+            <div class="header">
+                <span class="header-logo">Kris Com</span>
+                <button class="header-menu" onclick="switchScreen('screen-profile')">&#8943;</button>
+            </div>
+
+            <div class="booking-header">
+                <h1 class="booking-title">Панель админа</h1>
+            </div>
+
+            <!-- Изображение на главной -->
+            <div style="padding: 0 20px 16px">
+                <div class="admin-card">
+                    <div class="admin-card-service" style="margin-bottom:12px">Изображение на главной</div>
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+                        <img id="admin-welcome-preview" src="/static/img/girl.png" style="width:80px;height:100px;object-fit:cover;border-radius:12px;background:#f5f0e8">
+                        <div style="flex:1;font-size:13px;color:var(--text-light)">Текущее изображение девушки на главном экране</div>
+                    </div>
+                    <label class="review-photo-upload" for="welcome-image-input" style="margin-bottom:0">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                        <span id="welcome-image-label">Заменить изображение</span>
+                    </label>
+                    <input type="file" id="welcome-image-input" accept="image/*" style="display:none" onchange="uploadWelcomeImage(this)">
+                    <div id="welcome-image-result" style="display:none; margin-top:10px; font-size:14px; font-weight:600"></div>
+                </div>
+            </div>
+
+            <!-- Выдача бонусов -->
+            <div style="padding: 0 20px 16px">
+                <div class="admin-card">
+                    <div class="admin-card-service" style="margin-bottom:12px">Выдать бонусы</div>
+                    <div class="auth-field" style="margin-bottom:10px">
+                        <label class="auth-label">Юзернейм клиента</label>
+                        <input class="auth-input" type="text" id="bonus-login" placeholder="Без @">
+                    </div>
+                    <div class="auth-field" style="margin-bottom:12px">
+                        <label class="auth-label">Количество бонусов</label>
+                        <input class="auth-input" type="number" id="bonus-amount" placeholder="100" min="1">
+                    </div>
+                    <div id="bonus-result" style="display:none; margin-bottom:10px; font-size:14px; font-weight:600"></div>
+                    <button class="admin-btn admin-btn-confirm" style="width:100%" onclick="giveBonus()">Начислить</button>
+                </div>
+            </div>
+
+            <!-- Списание бонусов -->
+            <div style="padding: 0 20px 16px">
+                <div class="admin-card">
+                    <div class="admin-card-service" style="margin-bottom:12px">Списать бонусы</div>
+                    <div class="auth-field" style="margin-bottom:10px">
+                        <label class="auth-label">Юзернейм клиента</label>
+                        <input class="auth-input" type="text" id="spend-login" placeholder="Без @">
+                    </div>
+                    <div class="auth-field" style="margin-bottom:12px">
+                        <label class="auth-label">Количество бонусов</label>
+                        <input class="auth-input" type="number" id="spend-amount" placeholder="100" min="1">
+                    </div>
+                    <div id="spend-result" style="display:none; margin-bottom:10px; font-size:14px; font-weight:600"></div>
+                    <button class="admin-btn admin-btn-reject" style="width:100%;background:#E74C3C;color:white" onclick="spendBonus()">Списать</button>
+                </div>
+            </div>
+
+            <!-- Переключатель: Записи / Акции / Услуги -->
+            <div class="filter-tabs" style="padding: 0 20px 12px">
+                <button class="filter-tab active" onclick="switchAdminTab(this, 'bookings')">Записи</button>
+                <button class="filter-tab" onclick="switchAdminTab(this, 'promos')">Акции</button>
+                <button class="filter-tab" onclick="switchAdminTab(this, 'services')">Услуги</button>
+            </div>
+
+            <!-- Вкладка: Записи -->
+            <div id="admin-tab-bookings">
+                <div class="filter-tabs" style="padding: 0 20px 12px">
+                    <button class="filter-tab active" onclick="filterAdminBookings(this, 'new')">Новые</button>
+                    <button class="filter-tab" onclick="filterAdminBookings(this, 'all')">Все</button>
+                    <button class="filter-tab" onclick="filterAdminBookings(this, 'confirmed')">Подтверждённые</button>
+                    <button class="filter-tab" onclick="filterAdminBookings(this, 'completed')">Завершённые</button>
+                    <button class="filter-tab" onclick="filterAdminBookings(this, 'rejected')">Отклонённые</button>
+                </div>
+
+            <div id="admin-bookings-list" style="padding: 0 20px 20px;">
+                <div class="bookings-loading">
+                    <div class="spinner" style="width:32px;height:32px;border-width:3px;margin:40px auto"></div>
+                </div>
+            </div>
+            </div>
+
+            <!-- Вкладка: Акции -->
+            <div id="admin-tab-promos" style="display:none">
+                <div style="padding: 0 20px 16px">
+                    <div class="admin-card">
+                        <div class="admin-card-service" style="margin-bottom:12px">Добавить акцию</div>
+                        <div class="auth-field" style="margin-bottom:10px">
+                            <label class="auth-label">Название</label>
+                            <input class="auth-input" type="text" id="promo-title" placeholder="Скидка 20% на окрашивание">
+                        </div>
+                        <div class="auth-field" style="margin-bottom:10px">
+                            <label class="auth-label">Бейдж <span style="color:var(--text-light);font-weight:400">(необязательно)</span></label>
+                            <input class="auth-input" type="text" id="promo-badge" placeholder="-20%">
+                        </div>
+                        <div class="auth-field" style="margin-bottom:10px">
+                            <label class="auth-label">Срок действия <span style="color:var(--text-light);font-weight:400">(необязательно)</span></label>
+                            <input class="auth-input" type="text" id="promo-expiry" placeholder="До 31 августа">
+                        </div>
+                        <div class="auth-field" style="margin-bottom:10px">
+                            <label class="auth-label">Категория</label>
+                            <select class="auth-input" id="promo-category">
+                                <option value="discount">Скидки</option>
+                                <option value="complex">Комплексы</option>
+                                <option value="gift">Подарки</option>
+                            </select>
+                        </div>
+                        <div class="auth-field" style="margin-bottom:10px">
+                            <label class="auth-label">Иконка</label>
+                            <select class="auth-input" id="promo-icon">
+                                <option value="icon-promos.png">Акции</option>
+                                <option value="icon-hair.png">Волосы</option>
+                                <option value="icon-face.png">Лицо</option>
+                                <option value="icon-brows.png">Брови</option>
+                                <option value="icon-nails.png">Ногти</option>
+                                <option value="icon-more.png">Другое</option>
+                            </select>
+                        </div>
+                        <div id="promo-result" style="display:none; margin-bottom:10px; font-size:14px; font-weight:600"></div>
+                        <button class="admin-btn admin-btn-confirm" style="width:100%" onclick="createPromo()">Добавить</button>
+                    </div>
+                </div>
+
+                <div id="admin-promos-list" style="padding: 0 20px 20px;"></div>
+            </div>
+
+            <!-- Вкладка: Услуги -->
+            <div id="admin-tab-services" style="display:none">
+                <div style="padding: 0 20px 16px">
+                    <div class="admin-card">
+                        <div class="admin-card-service" style="margin-bottom:12px">Добавить услугу</div>
+                        <div class="auth-field" style="margin-bottom:10px">
+                            <label class="auth-label">Название</label>
+                            <input class="auth-input" type="text" id="service-name" placeholder="Ногти">
+                        </div>
+                        <div class="auth-field" style="margin-bottom:10px">
+                            <label class="auth-label">Описание</label>
+                            <input class="auth-input" type="text" id="service-desc" placeholder="Маникюр, педикюр">
+                        </div>
+                        <div class="auth-field" style="margin-bottom:10px">
+                            <label class="auth-label">Порядок</label>
+                            <input class="auth-input" type="number" id="service-order" placeholder="0" min="0">
+                        </div>
+                        <div class="auth-field" style="margin-bottom:10px">
+                            <label class="auth-label">Цена (₽)</label>
+                            <input class="auth-input" type="number" id="service-price" placeholder="0" min="0">
+                        </div>
+                        <div class="auth-field" style="margin-bottom:10px">
+                            <label class="auth-label">Время сеанса (мин)</label>
+                            <input class="auth-input" type="number" id="service-duration" placeholder="60" min="5" step="5">
+                        </div>
+                        <div class="auth-field" style="margin-bottom:10px">
+                            <label class="auth-label">Иконка</label>
+                            <select class="auth-input" id="service-icon">
+                                <option value="icon-hair.png">Волосы</option>
+                                <option value="icon-face.png">Лицо</option>
+                                <option value="icon-brows.png">Брови</option>
+                                <option value="icon-nails.png">Ногти</option>
+                                <option value="icon-more.png">Другое</option>
+                            </select>
+                        </div>
+                        <div id="service-result" style="display:none; margin-bottom:10px; font-size:14px; font-weight:600"></div>
+                        <button class="admin-btn admin-btn-confirm" style="width:100%" onclick="createService()">Добавить</button>
+                    </div>
+                </div>
+
+                <div id="admin-services-list" style="padding: 0 20px 20px;"></div>
+            </div>
+        </div>
+
+        <!-- ==================== BOTTOM NAVIGATION ==================== -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-screen="screen-home">
+                <img src="/static/img/icon-home.png" alt="Главная" width="24" height="24">
+                <span>Главная</span>
+            </button>
+            <button class="nav-item" data-screen="screen-booking">
+                <img src="/static/img/icon-booking.png" alt="Запись" width="24" height="24">
+                <span>Запись</span>
+            </button>
+            <button class="nav-item" data-screen="screen-promos">
+                <img src="/static/img/icon-promos.png" alt="Акции" width="24" height="24">
+                <span>Акции</span>
+            </button>
+            <button class="nav-item" data-screen="screen-profile">
+                <img src="/static/img/icon-profile.png" alt="Профиль" width="24" height="24">
+                <span>Профиль</span>
+            </button>
+        </nav>
+
+        <!-- ==================== REVIEW MODAL ==================== -->
+        <div class="modal-overlay" id="review-modal" onclick="closeReviewModal(event)">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <h3 class="modal-title">Оцените процедуру</h3>
+                <div style="display:flex;gap:8px;justify-content:center;margin-bottom:20px" id="review-stars">
+                    <button type="button" class="review-star" onclick="pickReviewStar(1)">&#9733;</button>
+                    <button type="button" class="review-star" onclick="pickReviewStar(2)">&#9733;</button>
+                    <button type="button" class="review-star" onclick="pickReviewStar(3)">&#9733;</button>
+                    <button type="button" class="review-star" onclick="pickReviewStar(4)">&#9733;</button>
+                    <button type="button" class="review-star" onclick="pickReviewStar(5)">&#9733;</button>
+                </div>
+                <div class="auth-field">
+                    <label class="auth-label">Отзыв <span style="color:var(--text-light);font-weight:400">(необязательно)</span></label>
+                    <input class="auth-input" type="text" id="review-text" placeholder="Расскажите о впечатлениях">
+                </div>
+                <div class="auth-field">
+                    <label class="auth-label">Фото результата <span style="color:var(--text-light);font-weight:400">(необязательно)</span></label>
+                    <label class="review-photo-upload" for="review-photo-input">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C9A96E" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                        <span id="review-photo-label">Добавить фото</span>
+                    </label>
+                    <input type="file" id="review-photo-input" accept="image/*" style="display:none" onchange="onReviewPhotoSelected(this)">
+                    <div id="review-photo-preview" style="display:none;margin-top:8px;position:relative">
+                        <img id="review-photo-img" style="width:100%;max-height:160px;object-fit:cover;border-radius:var(--radius-sm)">
+                        <button type="button" onclick="removeReviewPhoto()" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.5);color:white;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:16px">&times;</button>
+                    </div>
+                </div>
+                <div id="review-result" style="display:none; margin:10px 0; font-size:14px; font-weight:600"></div>
+                <div class="modal-actions">
+                    <button class="admin-btn modal-btn-cancel" onclick="closeReviewModal()">Пропустить</button>
+                    <button class="admin-btn admin-btn-confirm" id="review-submit-btn" onclick="submitReview()">Отправить</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== CONFIRM MODAL ==================== -->
+        <div class="modal-overlay" id="confirm-modal" onclick="closeModal(event)">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <h3 class="modal-title" id="modal-title">Подтвердить запись</h3>
+
+                <!-- Подтверждение: выбор времени -->
+                <div id="modal-confirm-body">
+                    <div class="auth-field">
+                        <label class="auth-label">Укажите точное время</label>
+                        <div class="time-slots" id="modal-time-slots">
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">09:00</button>
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">09:30</button>
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">10:00</button>
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">10:30</button>
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">11:00</button>
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">11:30</button>
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">12:00</button>
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">12:30</button>
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">13:00</button>
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">13:30</button>
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">14:00</button>
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">14:30</button>
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">15:00</button>
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">15:30</button>
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">16:00</button>
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">16:30</button>
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">17:00</button>
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">17:30</button>
+                            <button type="button" class="time-slot" onclick="pickModalTime(this)">18:00</button>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="admin-btn modal-btn-cancel" onclick="closeModal()">Отмена</button>
+                        <button class="admin-btn admin-btn-confirm" id="modal-confirm-btn" onclick="confirmBooking()">Подтвердить</button>
+                    </div>
+                </div>
+
+                <!-- Отклонение: причина -->
+                <div id="modal-reject-body" style="display:none">
+                    <div class="auth-field">
+                        <label class="auth-label">Причина отклонения <span style="color:var(--text-light);font-weight:400">(необязательно)</span></label>
+                        <input class="auth-input" type="text" id="reject-reason" placeholder="Например: Нет свободных мест">
+                    </div>
+                    <div class="modal-actions">
+                        <button class="admin-btn modal-btn-cancel" onclick="closeModal()">Отмена</button>
+                        <button class="admin-btn admin-btn-reject" style="background:#E74C3C;color:white" onclick="rejectBooking()">Отклонить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ==================== IMAGE ZOOM MODAL ==================== -->
+    <div id="image-zoom-modal" class="image-zoom-overlay" onclick="closeImageZoom(event)">
+        <button class="image-zoom-close" onclick="closeImageZoom(event)">&times;</button>
+        <button class="image-zoom-btn image-zoom-out" onclick="event.stopPropagation();zoomImage(-1)">−</button>
+        <button class="image-zoom-btn image-zoom-in" onclick="event.stopPropagation();zoomImage(1)">+</button>
+        <div class="image-zoom-container" id="image-zoom-container">
+            <img id="image-zoom-img" src="" alt="" draggable="false">
+        </div>
+        <div class="image-zoom-level" id="image-zoom-level">100%</div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

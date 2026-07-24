@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.env
+*.db
+.git
+fly.toml
+ngrok.exe
+webapp/uploads/*
+!webapp/uploads/.gitkeep
+database/*.db
