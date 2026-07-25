@@ -531,11 +531,12 @@
                 </div>
             </div>
 
-            <!-- Переключатель: Записи / Акции / Услуги -->
+            <!-- Переключатель: Записи / Акции / Услуги / Админы -->
             <div class="filter-tabs" style="padding: 0 20px 12px">
                 <button class="filter-tab active" onclick="switchAdminTab(this, 'bookings')">Записи</button>
                 <button class="filter-tab" onclick="switchAdminTab(this, 'promos')">Акции</button>
                 <button class="filter-tab" onclick="switchAdminTab(this, 'services')">Услуги</button>
+                <button class="filter-tab" onclick="switchAdminTab(this, 'admins')">Админы</button>
             </div>
 
             <!-- Вкладка: Записи -->
@@ -640,6 +641,26 @@
                 </div>
 
                 <div id="admin-services-list" style="padding: 0 20px 20px;"></div>
+            </div>
+
+            <!-- Вкладка: Админы -->
+            <div id="admin-tab-admins" style="display:none">
+                <div style="padding: 0 20px 16px">
+                    <div class="admin-card">
+                        <div class="admin-card-service" style="margin-bottom:12px">Назначить админа</div>
+                        <div class="auth-field" style="margin-bottom:10px">
+                            <label class="auth-label">Юзернейм (без @)</label>
+                            <input class="auth-input" type="text" id="admin-login" placeholder="ivan_ivanov">
+                        </div>
+                        <div id="admin-result" style="display:none; margin-bottom:10px; font-size:14px; font-weight:600"></div>
+                        <button class="admin-btn admin-btn-confirm" style="width:100%" onclick="makeAdmin()">Назначить</button>
+                    </div>
+                </div>
+
+                <div style="padding: 0 20px 20px">
+                    <div class="admin-card-service" style="margin-bottom:12px; margin-left:20px">Текущие админы</div>
+                    <div id="admins-list" style="padding: 0 20px 20px;"></div>
+                </div>
             </div>
         </div>
 

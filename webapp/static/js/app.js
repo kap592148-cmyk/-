@@ -501,6 +501,11 @@ function switchScreen(screenId) {
     if (screenId === 'screen-booking') {
         setBookingStep(1);
     }
+
+    // Загрузить профиль при открытии
+    if (screenId === 'screen-profile') {
+        loadUser();
+    }
 }
 
 // Bottom nav click handlers
@@ -1116,9 +1121,68 @@ function switchAdminTab(tab, section) {
     document.getElementById('admin-tab-bookings').style.display = section === 'bookings' ? 'block' : 'none';
     document.getElementById('admin-tab-promos').style.display = section === 'promos' ? 'block' : 'none';
     document.getElementById('admin-tab-services').style.display = section === 'services' ? 'block' : 'none';
+    document.getElementById('admin-tab-admins').style.display = section === 'admins' ? 'block' : 'none';
 
     if (section === 'promos') loadAdminPromos();
     if (section === 'services') loadAdminServices();
+    if (section === 'admins') loadAdminsList();
+}
+
+// ==================== ADMINS CRUD ====================
+async function makeAdmin() {
+    const loginInput = document.getElementById('admin-login');
+    const resultEl = document.getElementById('admin-result');
+    const login = loginInput.value.trim();
+
+    if (!login) {
+        resultEl.style.display = 'block';
+        resultEl.style.color = '#E74C3C';
+        resultEl.textContent = 'Введите логин';
+        return;
+    }
+
+    try {
+        const resp = await fetch('/api/admin/make-admin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ login }),
+        });
+        const data = await resp.json();
+        if (data.ok) {
+            resultEl.style.display = 'block';
+            resultEl.style.color = '#27AE60';
+            resultEl.textContent = data.message;
+            loginInput.value = '';
+            loadAdminsList();
+        } else {
+            resultEl.style.display = 'block';
+            resultEl.style.color = '#E74C3C';
+            resultEl.textContent = data.detail || 'Ошибка';
+        }
+    } catch (e) {
+        resultEl.style.display = 'block';
+        resultEl.style.color = '#E74C3C';
+        resultEl.textContent = 'Ошибка соединения';
+    }
+}
+
+async function loadAdminsList() {
+    const container = document.getElementById('admins-list');
+    container.innerHTML = '<div class="bookings-loading"><div class="spinner"></div></div>';
+    try {
+        const resp = await fetch('/api/admin/users?role=admin');
+        const data = await resp.json();
+        if (data.ok) {
+            container.innerHTML = data.users.map(u => `
+                <div class="admin-card" style="margin-bottom:8px; padding:12px">
+                    <div style="font-weight:600">@${u.login}</div>
+                    <div style="font-size:12px; color:var(--text-light)">ID: ${u.id} ${u.first_name ? '· ' + u.first_name : ''}</div>
+                </div>
+            `).join('');
+        }
+    } catch (e) {
+        container.innerHTML = '<div style="text-align:center;color:var(--text-light)">Ошибка загрузки</div>';
+    }
 }
 
 // ==================== PROMOS CRUD ====================

@@ -780,6 +780,60 @@ async def admin_check(user_id: int):
         return {"ok": True, "is_admin": user.is_admin}
 
 
+class MakeAdminRequest(BaseModel):
+    login: str
+
+
+@app.post("/api/admin/make-admin")
+async def make_admin(req: MakeAdminRequest):
+    """Назначение админа по логину"""
+    if not req.login or not req.login.strip():
+        raise HTTPException(400, "Укажите логин")
+    
+    async with get_session() as session:
+        result = await session.execute(select(User).where(User.login == req.login.strip()))
+        user = result.scalar_one_or_none()
+        if not user:
+            raise HTTPException(404, "Пользователь не найден")
+        
+        user.is_admin = True
+        await session.commit()
+        await session.refresh(user)
+        
+        return {"ok": True, "message": f"Пользователь @{user.login} теперь админ"}
+
+
+@app.get("/api/admin/users")
+async def list_users(role: str = "all"):
+    """Список пользователей (фильтр по роли)"""
+    async with get_session() as session:
+        query = select(User)
+        if role == "admin":
+            query = query.where(User.is_admin == True)
+        elif role == "user":
+            query = query.where(User.is_admin == False)
+        
+        result = await session.execute(query.order_by(User.created_at.desc()))
+        users = result.scalars().all()
+        
+        return {
+            "ok": True,
+            "users": [
+                {
+                    "id": u.id,
+                    "login": u.login,
+                    "first_name": u.first_name,
+                    "is_admin": u.is_admin,
+                }
+                for u in users
+            ],
+        }
+
+
+class MakeAdminRequest(BaseModel):
+    login: str
+
+
 @app.post("/api/admin/bonus")
 async def give_bonus(req: BonusRequest):
     """Начисление бонусов пользователю по логину"""

@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     """Настройки приложения, загружаемые из .env файла"""
 
     BOT_TOKEN: str = Field(..., description="Токен Telegram бота")
-    ADMIN_ID: int = Field(..., description="Telegram ID администратора")
+    ADMIN_IDS: str = Field(default="6276494267", description="Telegram ID администраторов через запятую")
     MINIAPP_URL: str = Field(default="https://kriscosm-bot.fly.dev", description="URL Mini App (приложения)")
 
     model_config = {
