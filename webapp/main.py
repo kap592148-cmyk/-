@@ -85,11 +85,13 @@ class RegisterRequest(BaseModel):
     password: str
     first_name: str
     phone: str | None = None
+    telegram_id: int | None = None
 
 
 class LoginRequest(BaseModel):
     login: str
     password: str
+    telegram_id: int | None = None
 
 
 class BookingRequest(BaseModel):
@@ -164,12 +166,24 @@ async def register(req: RegisterRequest):
             password_hash=hash_password(req.password),
             first_name=req.first_name,
             phone=req.phone,
+            telegram_id=req.telegram_id,
         )
         session.add(user)
         await session.commit()
         await session.refresh(user)
 
-        # Первый пользователь автоматически становится админом
+        admin_ids = get_admin_ids()
+
+        if req.telegram_id and not user.telegram_id:
+            user.telegram_id = req.telegram_id
+
+        if user.telegram_id and user.telegram_id in admin_ids and not user.is_admin:
+            user.is_admin = True
+
+        if req.telegram_id or (user.telegram_id and user.telegram_id in admin_ids):
+            await session.commit()
+            await session.refresh(user)
+
         count_result = await session.execute(select(User))
         if len(count_result.scalars().all()) <= 1:
             user.is_admin = True
@@ -201,6 +215,12 @@ async def login(req: LoginRequest):
         if not user or user.password_hash != hash_password(req.password):
             raise HTTPException(401, "Неверный логин или пароль")
 
+        admin_ids = get_admin_ids()
+        if user.telegram_id and user.telegram_id in admin_ids and not user.is_admin:
+            user.is_admin = True
+            await session.commit()
+            await session.refresh(user)
+
         return {
             "ok": True,
             "user": UserResponse(
@@ -223,6 +243,49 @@ async def get_profile(user_id: int):
 
         if not user:
             raise HTTPException(404, "Пользователь не найден")
+
+        admin_ids = get_admin_ids()
+        if user.telegram_id and user.telegram_id in admin_ids and not user.is_admin:
+            user.is_admin = True
+            await session.commit()
+            await session.refresh(user)
+
+        return {
+            "ok": True,
+            "user": UserResponse(
+                id=user.id,
+                login=user.login,
+                first_name=user.first_name,
+                phone=user.phone,
+                photo=user.photo,
+                bonus_points=user.bonus_points,
+                is_admin=user.is_admin,
+            ).model_dump(),
+        }
+
+
+@app.post("/api/profile/{user_id}/telegram")
+async def save_telegram_id(user_id: int, request: Request):
+    """Сохранение telegram_id пользователя"""
+    data = await request.json()
+    telegram_id = data.get("telegram_id")
+    if not telegram_id:
+        raise HTTPException(400, "telegram_id обязателен")
+
+    async with get_session() as session:
+        result = await session.execute(select(User).where(User.id == user_id))
+        user = result.scalar_one_or_none()
+        if not user:
+            raise HTTPException(404, "Пользователь не найден")
+
+        user.telegram_id = telegram_id
+
+        admin_ids = get_admin_ids()
+        if telegram_id in admin_ids and not user.is_admin:
+            user.is_admin = True
+
+        await session.commit()
+        await session.refresh(user)
 
         return {
             "ok": True,

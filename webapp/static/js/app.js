@@ -3,12 +3,20 @@
 // Текущий пользователь (хранится в localStorage)
 let currentUser = null;
 
+function getTelegramId() {
+    try {
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
+            return window.Telegram.WebApp.initDataUnsafe.user.id;
+        }
+    } catch (e) {}
+    return null;
+}
+
 async function loadUser() {
     const data = localStorage.getItem('kriscom_user');
     if (data) {
         try {
             currentUser = JSON.parse(data);
-            // Проверяем, существует ли ещё пользователь в БД
             const resp = await fetch('/api/profile/' + currentUser.id);
             if (resp.ok) {
                 const result = await resp.json();
@@ -20,6 +28,24 @@ async function loadUser() {
             }
             updateProfileUI();
             updateAdminUI();
+
+            const tgId = getTelegramId();
+            if (tgId && currentUser && !currentUser.telegram_id) {
+                try {
+                    const tgResp = await fetch('/api/profile/' + currentUser.id + '/telegram', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ telegram_id: tgId }),
+                    });
+                    if (tgResp.ok) {
+                        const tgData = await tgResp.json();
+                        currentUser = tgData.user;
+                        localStorage.setItem('kriscom_user', JSON.stringify(currentUser));
+                        updateProfileUI();
+                        updateAdminUI();
+                    }
+                } catch (e) {}
+            }
         } catch (e) {
             currentUser = null;
             localStorage.removeItem('kriscom_user');
@@ -403,6 +429,7 @@ async function handleRegister(e) {
                 login: login,
                 password: password,
                 first_name: name,
+                telegram_id: getTelegramId(),
             }),
         });
 
@@ -452,7 +479,7 @@ async function handleLogin(e) {
         const resp = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ login, password }),
+            body: JSON.stringify({ login, password, telegram_id: getTelegramId() }),
         });
 
         const data = await resp.json();
