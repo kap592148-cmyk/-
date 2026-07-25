@@ -9,7 +9,7 @@ from aiogram.client.default import DefaultBotProperties
 
 from config.settings import settings
 from database.connection import init_db
-from bot.handlers import start, menu
+from bot.handlers import start, menu, admin
 from webapp.main import app as webapp
 
 
@@ -54,7 +54,7 @@ async def main() -> None:
     )
     dp = Dispatcher()
 
-    dp.include_routers(start.router, menu.router)
+    dp.include_routers(start.router, menu.router, admin.router)
 
     logging.info("Бот запущен!")
     await dp.start_polling(bot)
