@@ -20,9 +20,10 @@ async def cmd_start(message: Message) -> None:
             select(User).where(User.login == message.from_user.username)
         )
         user = result.scalar_one_or_none()
+        admin_ids = settings.ADMIN_IDS.split(",")
         if user:
             user.telegram_id = message.from_user.id
-            if message.from_user.id == settings.ADMIN_ID:
+            if str(message.from_user.id) in admin_ids:
                 user.is_admin = True
             await session.commit()
         else:
@@ -30,7 +31,7 @@ async def cmd_start(message: Message) -> None:
                 telegram_id=message.from_user.id,
                 login=message.from_user.username or str(message.from_user.id),
                 first_name=message.from_user.first_name or "",
-                is_admin=message.from_user.id == settings.ADMIN_ID,
+                is_admin=str(message.from_user.id) in admin_ids,
             )
             session.add(new_user)
             await session.commit()

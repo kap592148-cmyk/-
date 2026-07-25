@@ -30,7 +30,7 @@ def hash_password(password: str) -> str:
 
 def get_admin_ids() -> list[int]:
     """Список Telegram ID администраторов из конфига"""
-    return [int(x.strip()) for x in str(settings.ADMIN_ID).split(",") if x.strip()]
+    return [int(x.strip()) for x in str(settings.ADMIN_IDS).split(",") if x.strip()]
 
 
 async def notify_admins(text: str) -> None:

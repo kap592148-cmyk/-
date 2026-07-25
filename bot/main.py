@@ -18,10 +18,12 @@ WEBAPP_PORT = 8000
 
 
 async def notify_admin(text: str) -> None:
-    """Отправка уведомления администратору"""
+    """Отправка уведомления администраторам"""
     bot = Bot(token=settings.BOT_TOKEN)
     try:
-        await bot.send_message(chat_id=settings.ADMIN_ID, text=text)
+        admin_ids = [int(x.strip()) for x in settings.ADMIN_IDS.split(",") if x.strip()]
+        for admin_id in admin_ids:
+            await bot.send_message(chat_id=admin_id, text=text)
     finally:
         await bot.session.close()
 
